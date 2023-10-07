@@ -1,4 +1,4 @@
-import React, {FC, useEffect, useRef} from "react";
+import React, {FC, useEffect, useRef, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import appState from "../store/appState";
 import {observer} from "mobx-react-lite";
@@ -10,6 +10,7 @@ export const PlayerControlScreen: FC = observer(() => {
     const {playerId} = useParams()
     const wsConnection = useRef<WebSocket | null>(null);
     const navigate = useNavigate();
+    const [buttonsState, setButtonsState] = useState({isUp: false, isLeft: false, isRight: false});
 
     useEffect(() => {
         if (!appState.playerId) {
@@ -17,6 +18,40 @@ export const PlayerControlScreen: FC = observer(() => {
         }
     }, [])
 
+    useEffect(() => {
+        if (appState.wsConnection) {
+            appState.wsConnection?.send(JSON.stringify({type: 'control', id: appState.playerId, controls: buttonsState}));
+        }
+    }, [buttonsState])
+
+
+    const onButtonDown = (btn: string) => {
+        switch (btn) {
+            case 'up':
+                setButtonsState(prevState => ({...prevState, isUp: true}));
+                break;
+            case 'left':
+                setButtonsState(prevState => ({...prevState, isLeft: true}));
+                break;
+            case 'right':
+                setButtonsState(prevState => ({...prevState, isRight: true}));
+                break;
+        }
+    }
+
+    const onButtonUp = (btn: string) => {
+        switch (btn) {
+            case 'up':
+                setButtonsState(prevState => ({...prevState, isUp: false}));
+                break;
+            case 'left':
+                setButtonsState(prevState => ({...prevState, isLeft: false}));
+                break;
+            case 'right':
+                setButtonsState(prevState => ({...prevState, isRight: false}));
+                break;
+        }
+    }
 
     return (
         <div style={{
@@ -43,14 +78,14 @@ export const PlayerControlScreen: FC = observer(() => {
                 alignItems: 'center',
                 gap: '10px'
             }}>
-                <Button className="control-button">
+                <Button className="control-button" onPointerDown={() => onButtonDown('up')} onPointerUp={() => onButtonUp('up')}>
                     <UpOutlined/>
                 </Button>
                 <div style={{display: 'flex', gap: '50px'}}>
-                    <Button className="control-button">
+                    <Button className="control-button" onPointerDown={() => onButtonDown('left')} onPointerUp={() => onButtonUp('left')}>
                         <LeftOutlined/>
                     </Button>
-                    <Button className="control-button">
+                    <Button className="control-button" onPointerDown={() => onButtonDown('right')} onPointerUp={() => onButtonUp('right')}>
                         <RightOutlined/>
                     </Button>
                 </div>
