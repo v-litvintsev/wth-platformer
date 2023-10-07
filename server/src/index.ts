@@ -53,6 +53,94 @@ const LOGIC_DATA = {
   },
 }
 
+interface ISceneBlock {
+  x: number
+  y: number
+  width: number
+  height: number
+}
+
+const SCENE_BLOCKS: ISceneBlock[] = [
+  {
+    x: 56,
+    y: 802,
+    width: 170,
+    height: 8,
+  },
+  {
+    x: 286,
+    y: 766,
+    width: 108,
+    height: 8,
+  },
+  {
+    x: 410,
+    y: 788,
+    width: 61,
+    height: 8,
+  },
+  {
+    x: 509,
+    y: 683,
+    width: 61,
+    height: 8,
+  },
+  {
+    x: 712,
+    y: 676,
+    width: 84,
+    height: 8,
+  },
+  {
+    x: 670,
+    y: 581,
+    width: 84,
+    height: 8,
+  },
+  {
+    x: 862,
+    y: 515,
+    width: 13,
+    height: 8,
+  },
+  {
+    x: 930,
+    y: 427,
+    width: 14,
+    height: 8,
+  },
+  {
+    x: 608,
+    y: 473,
+    width: 38,
+    height: 8,
+  },
+  {
+    x: 359,
+    y: 509,
+    width: 131,
+    height: 8,
+  },
+  {
+    x: 298,
+    y: 397,
+    width: 67,
+    height: 8,
+  },
+  {
+    x: 464,
+    y: 319,
+    width: 52,
+    height: 8,
+  },
+  {
+    x: 608,
+    y: 369,
+    width: 221,
+    height: 8,
+  },
+]
+
 const start = async () => {
   setInterval(() => {
     for (let playerIndex = 0; playerIndex < playersState.length; playerIndex++) {
@@ -84,10 +172,14 @@ const start = async () => {
         playersState[playerIndex].x = LOGIC_DATA.START_COORDS.X
         playersState[playerIndex].y = LOGIC_DATA.START_COORDS.Y
       }
+
+      // for(let blockIndex = 0; blockIndex < SCENE_BLOCKS.length; blockIndex++) {
+
+      // }
     }
 
     wsServer.clients.forEach((client: WebSocket) => {
-      client.send(JSON.stringify({ playersState, type: 'update' }))
+      client.send(JSON.stringify({ playersState, sceneBlocks: SCENE_BLOCKS, type: 'update' }))
     })
   }, 1000 / 60)
 
