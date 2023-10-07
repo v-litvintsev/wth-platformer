@@ -141,6 +141,15 @@ const SCENE_BLOCKS: ISceneBlock[] = [
   },
 ]
 
+const TARGET_DATA = {
+  x: 703,
+  y: 332,
+  width: 32,
+  height: 32,
+}
+
+let winnerPlayerId: string
+
 const start = async () => {
   setInterval(() => {
     for (let playerIndex = 0; playerIndex < playersState.length; playerIndex++) {
@@ -211,10 +220,24 @@ const start = async () => {
           break
         }
       }
+
+      const isPlayerCollideTarget =
+        playersState[playerIndex].x >= TARGET_DATA.x &&
+        playersState[playerIndex].x <= TARGET_DATA.x + TARGET_DATA.width &&
+        playersState[playerIndex].y >= TARGET_DATA.y &&
+        playersState[playerIndex].y <= TARGET_DATA.y + TARGET_DATA.height
+
+      if (isPlayerCollideTarget) {
+        winnerPlayerId = playersState[playerIndex].id
+      }
     }
 
     wsServer.clients.forEach((client: WebSocket) => {
       client.send(JSON.stringify({ playersState, sceneBlocks: SCENE_BLOCKS, type: 'update' }))
+
+      if (winnerPlayerId) {
+        client.send(JSON.stringify({ winnerPlayerId, type: 'win' }))
+      }
     })
   }, 1000 / 60)
 
