@@ -45,6 +45,14 @@ const sendToClients = (message: any) => {
   })
 }
 
+const LOGIC_DATA = {
+  RADIUS: 11,
+  START_COORDS: {
+    X: 160,
+    Y: 755,
+  },
+}
+
 const start = async () => {
   setInterval(() => {
     for (let playerIndex = 0; playerIndex < playersState.length; playerIndex++) {
@@ -56,13 +64,26 @@ const start = async () => {
         playersState[playerIndex].xSpeed = playersState[playerIndex].xSpeed + 1
       }
 
-      if (playersState[playerIndex].controls.isUp) {
+      if (playersState[playerIndex].controls.isUp && playersState[playerIndex].isOnGround) {
         playersState[playerIndex].ySpeed = -10
         playersState[playerIndex].isOnGround = false
       }
 
       playersState[playerIndex].x += playersState[playerIndex].xSpeed
       playersState[playerIndex].y += playersState[playerIndex].ySpeed
+
+      // if (!playersState[playerIndex].isOnGround) {
+      //   playersState[playerIndex].ySpeed += 1
+      // }
+
+      if (
+        playersState[playerIndex].x - LOGIC_DATA.RADIUS <= 0 ||
+        playersState[playerIndex].x + LOGIC_DATA.RADIUS >= 1000 ||
+        playersState[playerIndex].y + LOGIC_DATA.RADIUS >= 1000
+      ) {
+        playersState[playerIndex].x = LOGIC_DATA.START_COORDS.X
+        playersState[playerIndex].y = LOGIC_DATA.START_COORDS.Y
+      }
     }
 
     wsServer.clients.forEach((client: WebSocket) => {
@@ -82,8 +103,8 @@ const start = async () => {
             player = {
               color: PLAYER_COLORS[Math.floor(Math.random() * PLAYER_COLORS.length)],
               id: uuid.v4(),
-              x: 0,
-              y: 0,
+              x: LOGIC_DATA.START_COORDS.X,
+              y: LOGIC_DATA.START_COORDS.Y,
               xSpeed: 0,
               ySpeed: 0,
               isOnGround: false,
