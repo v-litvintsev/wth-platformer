@@ -3,7 +3,7 @@ FROM node:18.12.0 AS builder
 
 WORKDIR /app
 
-COPY package.json yarn.lock ./
+COPY package.json ./
 
 RUN yarn install
 
@@ -14,7 +14,7 @@ RUN yarn run build
 # Serve app by Nginx
 FROM nginx:1.23.2-alpine
 
-COPY --from=builder /app/dist /usr/share/nginx/html
+COPY --from=builder /app/build /usr/share/nginx/html
 
 EXPOSE 80
 
