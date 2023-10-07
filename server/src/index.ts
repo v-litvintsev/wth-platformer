@@ -51,6 +51,11 @@ router.get('/new-player', (req, res) => {
 
   res.send(newPlayer)
 })
+router.get('/get-player/:id', (req, res) => {
+  const foundedPlayer = playersState.find((player) => player.id === req.params.id)
+
+  res.send(foundedPlayer)
+})
 
 app.use(express.json())
 app.use(cors())
@@ -64,11 +69,27 @@ const sendToClients = (message: any) => {
 }
 
 const start = async () => {
+  let t = new Date()
+
+  setInterval(() => {
+    wsServer.clients.forEach((client: WebSocket) => {
+      client.send('test')
+    })
+  }, 1000 / 60)
+
   try {
     wsServer.on('connection', (ws: WebSocket) => {
       ws.on('message', (data: string) => {
         try {
           const message = JSON.parse(data)
+
+          if (message.type === 'control') {
+            for (let playerIndex = 0; playerIndex < playersState.length; playerIndex++) {
+              if (playersState[playerIndex].id === message.id) {
+                playersState[playerIndex].controls = message.controls
+              }
+            }
+          }
         } catch (e) {
           console.error(e)
         }
