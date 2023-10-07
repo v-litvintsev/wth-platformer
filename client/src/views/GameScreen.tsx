@@ -48,37 +48,34 @@ export const GameScreen: FC = observer(() => {
         const ctx = canvasRef.current!.getContext("2d")!;
         ctx.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height);
 
-        for (let player of data.playersState) {
-            drawPlayer(player)
-        }
-    }
-
-    const fpsMeter = () => {
-        let prevTime = Date.now(),
-            frames = 0;
-
-        requestAnimationFrame(function loop() {
-            const time = Date.now();
-            frames++;
-            if (time > prevTime + 1000) {
-                let fps = Math.round( ( frames * 1000 ) / ( time - prevTime ) );
-                prevTime = time;
-                frames = 0;
-
-                console.info('FPS: ', fps);
-            }
-
-            requestAnimationFrame(loop);
-        });
+        drawPlayers(data.playersState);
+        drawScene(data.sceneBlocks);
     }
 
     const drawPlayer = (player: any) => {
         const ctx = canvasRef.current!.getContext("2d")!;
-        ctx.beginPath();
-        ctx.rect(player.x * pixelRatio!, player.y * pixelRatio!, 11 * pixelRatio!, 11 * pixelRatio!);
+
         ctx.fillStyle = player.color;
-        ctx.fill();
-        ctx.lineWidth = 5;
+        ctx.fillRect(player.x * pixelRatio!, player.y * pixelRatio!, 11 * pixelRatio!, 11 * pixelRatio!);
+    }
+
+    const drawPlayers = (playersState: any) => {
+        for (let player of playersState) {
+            drawPlayer(player)
+        }
+    }
+
+    const drawBlock = (block: any) => {
+        const ctx = canvasRef.current!.getContext("2d")!;
+
+        ctx.fillStyle = 'black';
+        ctx.fillRect(block.x * pixelRatio!, block.y * pixelRatio!, block.width * pixelRatio!, block.height * pixelRatio!);
+    }
+
+    const drawScene = (blocks: any) => {
+        for (let block of blocks) {
+            drawBlock(block)
+        }
     }
 
     return (
