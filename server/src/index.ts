@@ -49,7 +49,7 @@ router.get('/new-player', (req, res) => {
 
   playersState.push(newPlayer)
 
-  res.send(newPlayer.id)
+  res.send(newPlayer)
 })
 
 app.use(express.json())
@@ -57,11 +57,15 @@ app.use(cors())
 app.use('/api', router)
 app.use(errorMiddleware)
 
+const sendToClients = (message: any) => {
+  wsServer.clients.forEach((client: WebSocket) => {
+    client.send(JSON.stringify(message))
+  })
+}
+
 const start = async () => {
   try {
-    wsServer.on('connection', (wsServer) => (ws: WebSocket) => {
-      ws.send('start message')
-
+    wsServer.on('connection', (ws: WebSocket) => {
       ws.on('message', (data: string) => {
         try {
           const message = JSON.parse(data)
