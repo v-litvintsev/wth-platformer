@@ -34,8 +34,6 @@ router.get('/test', appController.healthChecker)
 router.get('/new-player', (req, res) => {
   res.send(uuid.v4())
 })
-router.get('/get-player/:id', (req, res) => {})
-
 app.use(express.json())
 app.use(cors())
 app.use('/api', router)
@@ -58,39 +56,47 @@ const start = async () => {
         playersState[playerIndex].xSpeed = playersState[playerIndex].xSpeed + 1
       }
 
+      if (playersState[playerIndex].controls.isUp) {
+        playersState[playerIndex].ySpeed = -10
+        playersState[playerIndex].isOnGround = false
+      }
+
       playersState[playerIndex].x += playersState[playerIndex].xSpeed
       playersState[playerIndex].y += playersState[playerIndex].ySpeed
     }
 
     wsServer.clients.forEach((client: WebSocket) => {
-      // client.send(JSON.stringify(playersState))
+      client.send(JSON.stringify(playersState))
     })
   }, 1000 / 60)
 
   try {
     wsServer.on('connection', (ws: WebSocket) => {
-      const player: IPlayerState = {
-        color: PLAYER_COLORS[Math.floor(Math.random()) * PLAYER_COLORS.length],
-        id: uuid.v4(),
-        x: 0,
-        y: 0,
-        xSpeed: 0,
-        ySpeed: 0,
-        isOnGround: false,
-        controls: {
-          isUp: false,
-          isLeft: false,
-          isRight: false,
-        },
-      }
-
-      playersState.push(player)
-
-      ws.send(JSON.stringify(player))
+      let player: IPlayerState
 
       ws.on('message', (data: string) => {
         try {
           const message = JSON.parse(data)
+
+          if (message.type === 'new-player') {
+            player = {
+              color: PLAYER_COLORS[Math.floor(Math.random()) * PLAYER_COLORS.length],
+              id: uuid.v4(),
+              x: 0,
+              y: 0,
+              xSpeed: 0,
+              ySpeed: 0,
+              isOnGround: false,
+              controls: {
+                isUp: false,
+                isLeft: false,
+                isRight: false,
+              },
+            }
+            playersState.push(player)
+
+            ws.send(JSON.stringify({ ...player, type: 'new-player' }))
+          }
 
           if (message.type === 'control') {
             for (let playerIndex = 0; playerIndex < playersState.length; playerIndex++) {
@@ -99,21 +105,19 @@ const start = async () => {
               }
             }
           }
-        } catch (e) {
-          console.error(e)
-        }
-
-        // homeHandler.onMessage(message)
-        // chatHandler.onMessage(message)
-        // onlineUsersHandler.onMessage(message)
+        } catch (e) {}
       })
 
       ws.on('close', () => {
-        // onlineUsersHandler.onClose()
+        if (player) {
+          playersState = playersState.filter((statePlayer) => statePlayer.id !== player.id)
+        }
       })
 
       ws.on('error', (error: Error) => {
-        // onlineUsersHandler.onError(error)
+        if (player) {
+          playersState = playersState.filter((statePlayer) => statePlayer.id !== player.id)
+        }
       })
     })
 
