@@ -66,7 +66,7 @@ const start = async () => {
     }
 
     wsServer.clients.forEach((client: WebSocket) => {
-      client.send(JSON.stringify(playersState))
+      client.send(JSON.stringify({ playersState, type: 'update' }))
     })
   }, 1000 / 60)
 
