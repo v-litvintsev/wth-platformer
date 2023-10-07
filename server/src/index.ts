@@ -80,7 +80,7 @@ const start = async () => {
 
           if (message.type === 'new-player') {
             player = {
-              color: PLAYER_COLORS[Math.floor(Math.random()) * PLAYER_COLORS.length],
+              color: PLAYER_COLORS[Math.floor(Math.random() * PLAYER_COLORS.length)],
               id: uuid.v4(),
               x: 0,
               y: 0,
