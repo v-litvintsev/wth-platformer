@@ -1,13 +1,21 @@
-FROM node:18.17.0
+# Build app and run unit tests
+FROM node:18.12.0 AS builder
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
-COPY ./package*.json .
+COPY package.json yarn.lock ./
 
-RUN npm install
+RUN yarn install
 
 COPY . .
 
-EXPOSE 3000
+RUN yarn run build
 
-CMD ["npm", "run", "dev"]
+# Serve app by Nginx
+FROM nginx:1.23.2-alpine
+
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
