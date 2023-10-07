@@ -1,4 +1,5 @@
 import { FC, useEffect, useRef } from "react";
+import {Link} from "react-router-dom";
 
 export const GameScreen: FC = () => {
   const canvasRef = useRef<null | HTMLCanvasElement>(null);
