@@ -34,26 +34,7 @@ router.get('/test', appController.healthChecker)
 router.get('/new-player', (req, res) => {
   res.send(uuid.v4())
 })
-router.get('/get-player/:id', (req, res) => {
-  const newPlayer: IPlayerState = {
-    color: PLAYER_COLORS[Math.floor(Math.random()) * PLAYER_COLORS.length],
-    id: uuid.v4(),
-    x: 0,
-    y: 0,
-    xSpeed: 0,
-    ySpeed: 0,
-    isOnGround: false,
-    controls: {
-      isUp: false,
-      isLeft: false,
-      isRight: false,
-    },
-  }
-
-  playersState.push(newPlayer)
-
-  res.send(newPlayer)
-})
+router.get('/get-player/:id', (req, res) => {})
 
 app.use(express.json())
 app.use(cors())
@@ -82,12 +63,31 @@ const start = async () => {
     }
 
     wsServer.clients.forEach((client: WebSocket) => {
-      client.send(JSON.stringify(playersState, null, 0))
+      // client.send(JSON.stringify(playersState))
     })
   }, 1000 / 60)
 
   try {
     wsServer.on('connection', (ws: WebSocket) => {
+      const player: IPlayerState = {
+        color: PLAYER_COLORS[Math.floor(Math.random()) * PLAYER_COLORS.length],
+        id: uuid.v4(),
+        x: 0,
+        y: 0,
+        xSpeed: 0,
+        ySpeed: 0,
+        isOnGround: false,
+        controls: {
+          isUp: false,
+          isLeft: false,
+          isRight: false,
+        },
+      }
+
+      playersState.push(player)
+
+      ws.send(JSON.stringify(player))
+
       ws.on('message', (data: string) => {
         try {
           const message = JSON.parse(data)
