@@ -1,5 +1,3 @@
-import { ObjectId, Schema } from 'mongoose'
-
 export enum EWsMessageTypes {
   openMessage = 'open_message',
   homeClickMessage = 'home_click_message',
@@ -30,23 +28,8 @@ export enum EWsRequestTypes {
   newSendingMessage = 'new_message',
 }
 
-interface IOnlineUser {
-  username: string
-  id: ObjectId
-}
-
 export interface IOnlineUsersUpdateMessage {
   type: EWsRequestTypes.onlineUsersUpdate
-  onlineUsers: IOnlineUser[]
-}
-
-export interface ISendingMessage {
-  authorId: Schema.Types.ObjectId
-  type: EWsRequestTypes.newSendingMessage
-  author: string
-  text: string
-  createdAt: string
-  id: string
 }
 
 export interface IHomeMessage {
@@ -55,4 +38,4 @@ export interface IHomeMessage {
   lastClick: string
 }
 
-export type TWsRequest = IHomeMessage | IOnlineUsersUpdateMessage | ISendingMessage
+export type TWsRequest = IHomeMessage | IOnlineUsersUpdateMessage
