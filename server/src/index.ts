@@ -28,10 +28,13 @@ interface IPlayerState {
 
 const PLAYER_COLORS = ['#00DAE8', '#00CD77', '#FF6422', '#E8006F', '#883FFF']
 
-const playersState: IPlayerState[] = []
+let playersState: IPlayerState[] = []
 
 router.get('/test', appController.healthChecker)
 router.get('/new-player', (req, res) => {
+  res.send(uuid.v4())
+})
+router.get('/get-player/:id', (req, res) => {
   const newPlayer: IPlayerState = {
     color: PLAYER_COLORS[Math.floor(Math.random()) * PLAYER_COLORS.length],
     id: uuid.v4(),
@@ -51,11 +54,6 @@ router.get('/new-player', (req, res) => {
 
   res.send(newPlayer)
 })
-router.get('/get-player/:id', (req, res) => {
-  const foundedPlayer = playersState.find((player) => player.id === req.params.id)
-
-  res.send(foundedPlayer)
-})
 
 app.use(express.json())
 app.use(cors())
@@ -69,11 +67,22 @@ const sendToClients = (message: any) => {
 }
 
 const start = async () => {
-  let t = new Date()
-
   setInterval(() => {
+    for (let playerIndex = 0; playerIndex < playersState.length; playerIndex++) {
+      if (playersState[playerIndex].controls.isLeft) {
+        playersState[playerIndex].xSpeed = playersState[playerIndex].xSpeed - 1
+      }
+
+      if (playersState[playerIndex].controls.isRight) {
+        playersState[playerIndex].xSpeed = playersState[playerIndex].xSpeed + 1
+      }
+
+      playersState[playerIndex].x += playersState[playerIndex].xSpeed
+      playersState[playerIndex].y += playersState[playerIndex].ySpeed
+    }
+
     wsServer.clients.forEach((client: WebSocket) => {
-      client.send('test')
+      client.send(JSON.stringify(playersState, null, 0))
     })
   }, 1000 / 60)
 
