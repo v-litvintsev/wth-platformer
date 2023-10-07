@@ -2,7 +2,6 @@ import { Document } from 'mongoose'
 import { Server } from 'ws'
 import MessageModel, { IMessage } from '../../models/message-model'
 import { EWsRequestTypes, ISendingMessage } from '../../ws-handlers/types'
-import { deleteOverflowedMessage } from './deleteOverflowedMessage'
 import { sendToClients } from './sendToClients'
 
 interface INewMessageData {
@@ -24,5 +23,4 @@ export const handleNewMessage = async (wsServer: Server, messageData: INewMessag
   }
 
   sendToClients(wsServer, messageEvent)
-  deleteOverflowedMessage()
 }

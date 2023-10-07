@@ -1,5 +1,4 @@
 import WebSocket from 'ws'
-import { getUpdatedOnlineUsers } from '../services/ws-service/getUpdatedOnlineUsers'
 import { sendToClients } from '../services/ws-service/sendToClients'
 import { EWsMessageTypes, TWsMessage } from './types'
 
@@ -13,9 +12,7 @@ export default class OnlineUsersHandler {
       case EWsMessageTypes.openMessage:
         this.id = message.id
 
-        const response = await getUpdatedOnlineUsers(message.id, true)
-
-        sendToClients(this.wsServer, response)
+        // sendToClients(this.wsServer, response)
     }
   }
 

@@ -1,10 +1,7 @@
-import { PORT } from './config/app'
-import { DB_URI } from './config/mongodb'
 import express from 'express'
 import { createServer } from 'http'
 import WebSocket from 'ws'
 import cors from 'cors'
-import mongoose from 'mongoose'
 import errorMiddleware from './middlewares/error-middleware'
 import router from './router'
 import wsHandler from './ws-handlers'
@@ -20,14 +17,9 @@ app.use(errorMiddleware)
 
 const start = async () => {
   try {
-    await mongoose.connect(DB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    })
-
     wsServer.on('connection', wsHandler(wsServer))
 
-    server.listen(PORT, () => console.log(`Server started on port ${PORT}`))
+    server.listen('3001', () => console.log(`Server started on port ${3001}`))
   } catch (e) {
     console.log(e)
   }

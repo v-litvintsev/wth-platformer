@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start:dev": "tsnd --respawn --cls src/index",
+    "dev": "tsnd --respawn --cls src/index",
     "build": "del /f /q build && tsc",
     "start": "node build/index",
     "deploy": "git add ./build -f && git add package.json && git commit -m \"deploy commit\" && git push heroku main",
@@ -21,6 +21,7 @@
     "express-validator": "^6.12.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.12.14",
+    "typescript": "^5.2.2",
     "ws": "^7.4.6"
   },
   "devDependencies": {
@@ -32,7 +33,6 @@
     "@types/node": "^15.12.4",
     "@types/ws": "^7.4.5",
     "prettier": "^2.3.1",
-    "ts-node-dev": "^1.1.6",
-    "typescript": "^4.3.2"
+    "ts-node-dev": "^1.1.6"
   }
 }
