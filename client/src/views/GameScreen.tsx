@@ -27,7 +27,7 @@ export const GameScreen: FC = observer(() => {
     }, [canvasRef.current])
 
     useEffect(() => {
-        if (appState.wsConnection) {
+        if (appState.wsConnection && canvasRef.current) {
             applyEventListener()
         }
     }, [appState.wsConnection])
