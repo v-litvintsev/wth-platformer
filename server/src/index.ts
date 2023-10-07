@@ -144,11 +144,17 @@ const SCENE_BLOCKS: ISceneBlock[] = [
 const start = async () => {
   setInterval(() => {
     for (let playerIndex = 0; playerIndex < playersState.length; playerIndex++) {
-      if (playersState[playerIndex].controls.isLeft) {
+      if (
+        playersState[playerIndex].controls.isLeft &&
+        Math.abs(playersState[playerIndex].xSpeed) < 10
+      ) {
         playersState[playerIndex].xSpeed = playersState[playerIndex].xSpeed - 1
       }
 
-      if (playersState[playerIndex].controls.isRight) {
+      if (
+        playersState[playerIndex].controls.isRight &&
+        Math.abs(playersState[playerIndex].xSpeed) < 10
+      ) {
         playersState[playerIndex].xSpeed = playersState[playerIndex].xSpeed + 1
       }
 
