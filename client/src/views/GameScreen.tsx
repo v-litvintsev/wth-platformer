@@ -1,11 +1,12 @@
 import { FC, useEffect, useRef } from "react";
 import {Link} from "react-router-dom";
+import {WS_SERVER_ADDRESS} from "../http-client/constants";
 
 export const GameScreen: FC = () => {
   const canvasRef = useRef<null | HTMLCanvasElement>(null);
 
   useEffect(() => {
-    const webSocket = new WebSocket('ws://127.0.0.1:3002')
+    const webSocket = new WebSocket(WS_SERVER_ADDRESS)
     const ctx = canvasRef.current?.getContext("2d");
     // if (ctx) {
     //   ctx.rect
