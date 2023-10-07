@@ -2,7 +2,8 @@ import { FC, useEffect } from "react";
 import { Layout } from "antd";
 import { Routes, Route } from "react-router-dom";
 import { GameScreen } from "./views/GameScreen";
-import {ControlScreen} from "./views/ControlScreen";
+import {PlayerControlScreen} from "./views/PlayerControlScreen";
+import {NewPlayerScreen} from "./views/NewPlayerScreen";
 
 const AppRouter: FC = () => {
   useEffect(() => {}, []);
@@ -15,7 +16,8 @@ const AppRouter: FC = () => {
     >
       <Routes>
         <Route path="/" element={<GameScreen />} />
-        <Route path="/controls" element={<ControlScreen />} />
+        <Route path="/player/:playerId" element={<PlayerControlScreen />} />
+        <Route path="/new-player" element={<NewPlayerScreen />} />
       </Routes>
     </Layout>
   );
