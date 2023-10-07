@@ -160,9 +160,9 @@ const start = async () => {
       playersState[playerIndex].x += playersState[playerIndex].xSpeed
       playersState[playerIndex].y += playersState[playerIndex].ySpeed
 
-      // if (!playersState[playerIndex].isOnGround) {
-      //   playersState[playerIndex].ySpeed += 1
-      // }
+      if (!playersState[playerIndex].isOnGround) {
+        playersState[playerIndex].ySpeed += 1
+      }
 
       if (
         playersState[playerIndex].x - LOGIC_DATA.RADIUS <= 0 ||
@@ -173,9 +173,38 @@ const start = async () => {
         playersState[playerIndex].y = LOGIC_DATA.START_COORDS.Y
       }
 
-      // for(let blockIndex = 0; blockIndex < SCENE_BLOCKS.length; blockIndex++) {
+      for (let blockIndex = 0; blockIndex < SCENE_BLOCKS.length; blockIndex++) {
+        const isPlayerCollidesBlock =
+          playersState[playerIndex].x >= SCENE_BLOCKS[blockIndex].x &&
+          playersState[playerIndex].x <=
+            SCENE_BLOCKS[blockIndex].x + SCENE_BLOCKS[blockIndex].width &&
+          playersState[playerIndex].y >= SCENE_BLOCKS[blockIndex].y &&
+          playersState[playerIndex].y <=
+            SCENE_BLOCKS[blockIndex].y + SCENE_BLOCKS[blockIndex].height
 
-      // }
+        if (isPlayerCollidesBlock) {
+          if (playersState[playerIndex].ySpeed < 0) {
+            playersState[playerIndex].y =
+              SCENE_BLOCKS[blockIndex].y + SCENE_BLOCKS[blockIndex].height
+            playersState[playerIndex].ySpeed = 0
+          } else {
+            playersState[playerIndex].y = SCENE_BLOCKS[blockIndex].y - LOGIC_DATA.RADIUS * 2
+            playersState[playerIndex].isOnGround = true
+            playersState[playerIndex].ySpeed = 0
+          }
+
+          if (playersState[playerIndex].xSpeed < 0) {
+            playersState[playerIndex].x =
+              SCENE_BLOCKS[blockIndex].x + SCENE_BLOCKS[blockIndex].width
+            playersState[playerIndex].xSpeed = 0
+          } else {
+            playersState[playerIndex].x = SCENE_BLOCKS[blockIndex].y - LOGIC_DATA.RADIUS * 2
+            playersState[playerIndex].xSpeed = 0
+          }
+
+          break
+        }
+      }
     }
 
     wsServer.clients.forEach((client: WebSocket) => {
