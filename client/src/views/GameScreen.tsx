@@ -111,7 +111,13 @@ export const GameScreen: FC = observer(() => {
     const ctx = canvasRef.current!.getContext("2d")!;
 
     ctx.beginPath();
-    ctx.arc(156, 58, 17, 0, Math.PI * 2);
+    ctx.arc(
+      (168 + 17) * pixelRatio!,
+      (52 + 17) * pixelRatio!,
+      17 * pixelRatio!,
+      0,
+      Math.PI * 2
+    );
     ctx.fillStyle = getTargetColor(ctx);
 
     ctx.fill();
