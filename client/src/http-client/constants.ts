@@ -1,2 +1,11 @@
-export const WS_SERVER_ADDRESS = process.env.NODE_ENV === 'development' ? 'ws://localhost:3001/ws' : 'ws://217.18.63.205:3001/ws'
-export const SERVER_ADDRESS = process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : 'http://217.18.63.205:3001'
+const IP_FOR_FAILOVER_2 = "192.168.0.40";
+const LOCALHOST = "localhost";
+
+export const WS_SERVER_ADDRESS =
+  process.env.NODE_ENV === "development"
+    ? `ws://${IP_FOR_FAILOVER_2}:3001/ws`
+    : `ws://${IP_FOR_FAILOVER_2}:3001/ws`;
+export const SERVER_ADDRESS =
+  process.env.NODE_ENV === "development"
+    ? `http://${IP_FOR_FAILOVER_2}:3001`
+    : `http://${IP_FOR_FAILOVER_2}:3001`;
