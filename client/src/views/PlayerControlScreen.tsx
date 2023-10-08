@@ -7,8 +7,6 @@ import {LeftOutlined, RightOutlined, UpOutlined} from "@ant-design/icons";
 
 
 export const PlayerControlScreen: FC = observer(() => {
-    const {playerId} = useParams()
-    const wsConnection = useRef<WebSocket | null>(null);
     const navigate = useNavigate();
     const [buttonsState, setButtonsState] = useState({isUp: false, isLeft: false, isRight: false});
 
@@ -16,6 +14,26 @@ export const PlayerControlScreen: FC = observer(() => {
         if (!appState.playerId) {
             navigate('/new-player');
         }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowUp') {
+                onButtonDown('up')
+            } else if (e.key === 'ArrowLeft') {
+                onButtonDown('left')
+            } else if (e.key === 'ArrowRight') {
+                onButtonDown('right')
+            }
+        })
+
+        document.addEventListener('keyup', (e) => {
+            if (e.key === 'ArrowUp') {
+                onButtonUp('up')
+            } else if (e.key === 'ArrowLeft') {
+                onButtonUp('left')
+            } else if (e.key === 'ArrowRight') {
+                onButtonUp('right')
+            }
+        })
     }, [])
 
     useEffect(() => {
@@ -26,6 +44,7 @@ export const PlayerControlScreen: FC = observer(() => {
 
 
     const onButtonDown = (btn: string) => {
+        console.log('down', buttonsState)
         switch (btn) {
             case 'up':
                 setButtonsState(prevState => ({...prevState, isUp: true}));
@@ -40,6 +59,7 @@ export const PlayerControlScreen: FC = observer(() => {
     }
 
     const onButtonUp = (btn: string) => {
+        console.log('up', buttonsState)
         switch (btn) {
             case 'up':
                 setButtonsState(prevState => ({...prevState, isUp: false}));
