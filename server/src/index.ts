@@ -71,8 +71,9 @@ const TARGET_DATA = {
   height: 34,
 }
 
-let winnerPlayerId: string
+let winnerPlayerId: string | null
 let isGameInProgress = true
+let isGameResetTimeoutStarted = false
 
 const start = async () => {
   setInterval(() => {
@@ -190,10 +191,10 @@ const start = async () => {
       playersState[playerIndex].isOnGround = isPlayerOnGround
 
       const isPlayerCollideTarget =
-        playersState[playerIndex].x >= TARGET_DATA.x &&
-        playersState[playerIndex].x <= TARGET_DATA.x + TARGET_DATA.width &&
-        playersState[playerIndex].y >= TARGET_DATA.y &&
-        playersState[playerIndex].y <= TARGET_DATA.y + TARGET_DATA.height
+        playersState[playerIndex].x + LOGIC_DATA.RADIUS >= TARGET_DATA.x &&
+        playersState[playerIndex].x - LOGIC_DATA.RADIUS <= TARGET_DATA.x + TARGET_DATA.width &&
+        playersState[playerIndex].y + LOGIC_DATA.RADIUS >= TARGET_DATA.y &&
+        playersState[playerIndex].y - LOGIC_DATA.RADIUS <= TARGET_DATA.y + TARGET_DATA.height
 
       if (isPlayerCollideTarget) {
         winnerPlayerId = playersState[playerIndex].id
@@ -214,6 +215,17 @@ const start = async () => {
         const winner = playersState.find((player) => player.id === winnerPlayerId)
 
         client.send(JSON.stringify({ color: winner?.color, type: 'win' }))
+
+        if (!isGameResetTimeoutStarted) {
+          isGameResetTimeoutStarted = true
+
+          setTimeout(() => {
+            playersState.length = 0
+            winnerPlayerId = null
+            isGameInProgress = true
+            isGameResetTimeoutStarted = false
+          }, 5000)
+        }
       }
     })
   }, 1000 / 60)
