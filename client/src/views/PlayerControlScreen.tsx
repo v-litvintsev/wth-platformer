@@ -44,7 +44,6 @@ export const PlayerControlScreen: FC = observer(() => {
 
 
     const onButtonDown = (btn: string) => {
-        console.log('down', buttonsState)
         switch (btn) {
             case 'up':
                 setButtonsState(prevState => ({...prevState, isUp: true}));
@@ -59,7 +58,6 @@ export const PlayerControlScreen: FC = observer(() => {
     }
 
     const onButtonUp = (btn: string) => {
-        console.log('up', buttonsState)
         switch (btn) {
             case 'up':
                 setButtonsState(prevState => ({...prevState, isUp: false}));
