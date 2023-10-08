@@ -58,10 +58,10 @@ const LOGIC_DATA = {
 }
 
 const TARGET_DATA = {
-  x: 703,
-  y: 332,
-  width: 32,
-  height: 32,
+  x: 168,
+  y: 52,
+  width: 34,
+  height: 34,
 }
 
 let winnerPlayerId: string
