@@ -49,12 +49,6 @@ app.use(cors())
 app.use('/api', router)
 app.use(errorMiddleware)
 
-const sendToClients = (message: any) => {
-  wsServer.clients.forEach((client: WebSocket) => {
-    client.send(JSON.stringify(message))
-  })
-}
-
 const LOGIC_DATA = {
   RADIUS: 11,
   START_COORDS: {
@@ -71,6 +65,7 @@ const TARGET_DATA = {
 }
 
 let winnerPlayerId: string
+let isGameInProgress = true
 
 const start = async () => {
   setInterval(() => {
@@ -92,7 +87,7 @@ const start = async () => {
       }
 
       if (playersState[playerIndex].controls.isUp && playersState[playerIndex].isOnGround) {
-        playersState[playerIndex].ySpeed = -10
+        playersState[playerIndex].ySpeed = -11
         playersState[playerIndex].isOnGround = false
       }
 
@@ -119,9 +114,10 @@ const start = async () => {
       let isPlayerOnGround = false
 
       for (let blockIndex = 0; blockIndex < SCENE_BLOCKS.length; blockIndex++) {
-        // Если не стоит на блоке
-        // Если не под блоком
-        // Если по вертикали начало игрока - LOGIC_DATA.RADIUS
+        if (SCENE_BLOCKS[blockIndex].isGameStartBlock && !isGameInProgress) {
+          continue
+        }
+
         // Справа
         if (
           Math.abs(
@@ -198,7 +194,14 @@ const start = async () => {
     }
 
     wsServer.clients.forEach((client: WebSocket) => {
-      client.send(JSON.stringify({ playersState, sceneBlocks: SCENE_BLOCKS, type: 'update' }))
+      client.send(
+        JSON.stringify({
+          playersState,
+          sceneBlocks: SCENE_BLOCKS,
+          type: 'update',
+          isGameInProgress,
+        })
+      )
 
       if (winnerPlayerId) {
         client.send(JSON.stringify({ winnerPlayerId, type: 'win' }))
@@ -240,6 +243,10 @@ const start = async () => {
                 playersState[playerIndex].controls = message.controls
               }
             }
+          }
+
+          if (message.type === 'start-game') {
+            isGameInProgress = true
           }
         } catch (e) {}
       })

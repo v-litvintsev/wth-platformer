@@ -3,12 +3,13 @@ interface ISceneBlock {
   y: number
   width: number
   height: number
+  isGameStartBlock?: boolean
 }
 
 export const SCENE_BLOCKS: ISceneBlock[] = [
   { width: 169.82, height: 8, x: 56, y: 802.51 },
-  { width: 107.9, height: 8, x: 285.96, y: 765.95 },
-  { width: 61.32, height: 8, x: 409.78, y: 788.35 },
+  { width: 107.9, height: 8, x: 285.96, y: 765.95, isGameStartBlock: true },
+  { width: 61.32, height: 8, x: 409.78, y: 788.35, isGameStartBlock: true },
   { width: 60.73, height: 8, x: 522, y: 721 },
   { width: 83.73, height: 8, x: 675, y: 677 },
   { width: 37.74, height: 8, x: 590, y: 541 },
