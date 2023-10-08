@@ -204,7 +204,9 @@ const start = async () => {
       )
 
       if (winnerPlayerId) {
-        client.send(JSON.stringify({ winnerPlayerId, type: 'win' }))
+        const winner = playersState.find((player) => player.id === winnerPlayerId)
+
+        client.send(JSON.stringify({ color: winner?.color, type: 'win' }))
       }
     })
   }, 1000 / 60)
