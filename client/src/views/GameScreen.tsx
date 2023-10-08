@@ -1,6 +1,7 @@
 import { FC, useEffect, useRef, useState } from "react";
 import appState from "../store/appState";
 import { observer } from "mobx-react-lite";
+import { getTargetColor, targetAngleLoop } from "../utils/getTargetColor";
 
 export const GameScreen: FC = observer(() => {
   const canvasRef = useRef<null | HTMLCanvasElement>(null);
@@ -31,6 +32,11 @@ export const GameScreen: FC = observer(() => {
       setPixelRatio(canvasRef.current!.width / 1000);
     }
 
+    const targetAngleLoopInstance = targetAngleLoop();
+
+    return () => {
+      clearInterval(targetAngleLoopInstance);
+    };
     // fpsMeter()
   }, [canvasRef.current]);
 
@@ -101,10 +107,23 @@ export const GameScreen: FC = observer(() => {
     );
   };
 
+  const drawTarget = () => {
+    const ctx = canvasRef.current!.getContext("2d")!;
+
+    ctx.beginPath();
+    ctx.arc(156, 58, 17, 0, Math.PI * 2);
+    ctx.fillStyle = getTargetColor(ctx);
+
+    ctx.fill();
+    ctx.closePath();
+  };
+
   const drawScene = (blocks: any) => {
     for (let block of blocks) {
       drawBlock(block);
     }
+
+    drawTarget();
   };
 
   return (
