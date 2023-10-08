@@ -58,6 +58,7 @@ export const PlayerControlScreen: FC = observer(() => {
 
 
     const onButtonDown = (btn: string) => {
+        navigator?.vibrate(100);
         switch (btn) {
             case 'up':
                 setButtonsState(prevState => ({...prevState, isUp: true}));
