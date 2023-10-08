@@ -2,27 +2,13 @@ import { FC, useEffect, useRef, useState } from "react";
 import appState from "../store/appState";
 import { observer } from "mobx-react-lite";
 import { getTargetColor, targetAngleLoop } from "../utils/getTargetColor";
+import {vmin} from "../utils/vmin";
+import {Modal} from "antd";
 
 export const GameScreen: FC = observer(() => {
   const canvasRef = useRef<null | HTMLCanvasElement>(null);
   const [pixelRatio, setPixelRatio] = useState<number | null>(null);
-
-  function vmin(percent: number) {
-    return Math.min(
-      (percent *
-        Math.max(
-          document.documentElement.clientHeight,
-          window.innerHeight || 0
-        )) /
-        100,
-      (percent *
-        Math.max(
-          document.documentElement.clientWidth,
-          window.innerWidth || 0
-        )) /
-        100
-    );
-  }
+  const [winnerColor, setWinnerColor] = useState<string | null>(null);
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -54,6 +40,8 @@ export const GameScreen: FC = observer(() => {
         requestAnimationFrame(() => {
           drawFrame(data);
         });
+      } if (data.type === 'win' && !winnerColor) {
+        setWinnerColor(data.color as string)
       }
     });
   };
@@ -135,6 +123,14 @@ export const GameScreen: FC = observer(() => {
   return (
     <div style={{ height: "100%", display: "flex", justifyContent: "center" }}>
       <div style={{ height: "100vmin", width: "100vmin" }}>
+        <Modal width="80vh" open={!!winnerColor} title="Игра окончена" centered footer={<></>} closable={false}>
+          <div style={{textAlign: 'center', display: 'flex', justifyContent: 'center'}}>
+            <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
+              <h2 style={{margin: '0'}}>Выиграл</h2> <div style={{backgroundColor: winnerColor!, width: 30, height: 30, borderRadius: '100px'}}></div>
+            </div>
+          </div>
+        </Modal>
+
         <canvas style={{ height: "100%", width: "100%" }} ref={canvasRef} />
       </div>
     </div>

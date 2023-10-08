@@ -2,13 +2,14 @@ import React, {FC, useEffect, useRef, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import appState from "../store/appState";
 import {observer} from "mobx-react-lite";
-import {Button} from "antd";
+import {Button, Modal} from "antd";
 import {LeftOutlined, RightOutlined, UpOutlined} from "@ant-design/icons";
 
 
 export const PlayerControlScreen: FC = observer(() => {
     const navigate = useNavigate();
     const [buttonsState, setButtonsState] = useState({isUp: false, isLeft: false, isRight: false});
+    const [winnerColor, setWinnerColor] = useState<string | null>(null);
 
     useEffect(() => {
         if (!appState.playerId) {
@@ -35,6 +36,19 @@ export const PlayerControlScreen: FC = observer(() => {
             }
         })
     }, [])
+
+    useEffect(() => {
+        if (appState.wsConnection) {
+            appState.wsConnection?.addEventListener("message", (e) => {
+                const data = JSON.parse(e.data);
+
+                if (data.type === 'win' && !winnerColor) {
+                    setWinnerColor(data.color as string)
+                }
+            });
+        }
+    }, [appState.wsConnection]);
+
 
     useEffect(() => {
         if (appState.wsConnection) {
@@ -108,6 +122,14 @@ export const PlayerControlScreen: FC = observer(() => {
                     </Button>
                 </div>
             </div>
+
+            <Modal width="80vh" open={!!winnerColor} title="Игра окончена" centered footer={<></>} closable={false}>
+                <div style={{textAlign: 'center', display: 'flex', justifyContent: 'center'}}>
+                    <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
+                        <h2 style={{margin: '0'}}>Выиграл</h2> <div style={{backgroundColor: winnerColor!, width: 30, height: 30, borderRadius: '100px'}}></div>
+                    </div>
+                </div>
+            </Modal>
         </div>
     )
 })
