@@ -36,6 +36,13 @@ const PLAYER_COLORS = [
   '#BBEA01',
   '#4232FF',
   '#FFDE33',
+  '#C75F00',
+  '#8D58FE',
+  '#FC429B',
+  '#21DAB8',
+  '#9ABD0B',
+  '#26B1FF',
+  '#1F00DB',
 ]
 
 let playersState: IPlayerState[] = []
@@ -52,10 +59,8 @@ app.use(errorMiddleware)
 const LOGIC_DATA = {
   RADIUS: 11,
   START_COORDS: {
-    // X: 160,
-    // Y: 850,
-    X: 100,
-    Y: 50,
+    X: 160,
+    Y: 850,
   },
 }
 
