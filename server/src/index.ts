@@ -52,8 +52,10 @@ app.use(errorMiddleware)
 const LOGIC_DATA = {
   RADIUS: 11,
   START_COORDS: {
-    X: 160,
-    Y: 850,
+    // X: 160,
+    // Y: 850,
+    X: 100,
+    Y: 50,
   },
 }
 
