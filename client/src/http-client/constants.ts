@@ -1,6 +1,6 @@
 const IP_FOR_FAILOVER_2 = "192.168.0.40";
 const LOCALHOST = "localhost";
-const PRODUCTION_HOST = '217.18.63.205'
+const PRODUCTION_HOST = '109.172.83.229'
 
 export const WS_SERVER_ADDRESS =
   process.env.NODE_ENV === "development"
