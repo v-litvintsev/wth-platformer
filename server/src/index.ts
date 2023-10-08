@@ -53,7 +53,7 @@ const LOGIC_DATA = {
   RADIUS: 11,
   START_COORDS: {
     X: 160,
-    Y: 755,
+    Y: 850,
   },
 }
 
