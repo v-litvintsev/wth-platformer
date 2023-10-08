@@ -26,7 +26,16 @@ interface IPlayerState {
   }
 }
 
-const PLAYER_COLORS = ['#00DAE8', '#00CD77', '#FF6422', '#E8006F', '#883FFF']
+const PLAYER_COLORS = [
+  '#00DAE8',
+  '#00CD77',
+  '#FF6422',
+  '#E8006F',
+  '#883FFF',
+  '#BBEA01',
+  '#4232FF',
+  '#FFDE33',
+]
 
 let playersState: IPlayerState[] = []
 
@@ -153,18 +162,20 @@ let winnerPlayerId: string
 const start = async () => {
   setInterval(() => {
     for (let playerIndex = 0; playerIndex < playersState.length; playerIndex++) {
-      if (
-        playersState[playerIndex].controls.isLeft &&
-        Math.abs(playersState[playerIndex].xSpeed) < 10
-      ) {
+      if (playersState[playerIndex].controls.isLeft) {
         playersState[playerIndex].xSpeed = playersState[playerIndex].xSpeed - 1
+
+        if (Math.abs(playersState[playerIndex].xSpeed) > 5) {
+          playersState[playerIndex].xSpeed = -5
+        }
       }
 
-      if (
-        playersState[playerIndex].controls.isRight &&
-        Math.abs(playersState[playerIndex].xSpeed) < 10
-      ) {
+      if (playersState[playerIndex].controls.isRight) {
         playersState[playerIndex].xSpeed = playersState[playerIndex].xSpeed + 1
+
+        if (Math.abs(playersState[playerIndex].xSpeed) > 5) {
+          playersState[playerIndex].xSpeed = 5
+        }
       }
 
       if (playersState[playerIndex].controls.isUp && playersState[playerIndex].isOnGround) {
@@ -175,8 +186,10 @@ const start = async () => {
       playersState[playerIndex].x += playersState[playerIndex].xSpeed
       playersState[playerIndex].y += playersState[playerIndex].ySpeed
 
+      playersState[playerIndex].xSpeed = playersState[playerIndex].xSpeed * 0.95
+
       if (!playersState[playerIndex].isOnGround) {
-        playersState[playerIndex].ySpeed += 1
+        playersState[playerIndex].ySpeed += 0.8
       }
 
       if (
@@ -186,40 +199,50 @@ const start = async () => {
       ) {
         playersState[playerIndex].x = LOGIC_DATA.START_COORDS.X
         playersState[playerIndex].y = LOGIC_DATA.START_COORDS.Y
+        playersState[playerIndex].xSpeed = 0
+        playersState[playerIndex].ySpeed = 0
       }
+
+      let isPlayerOnGround = false
 
       for (let blockIndex = 0; blockIndex < SCENE_BLOCKS.length; blockIndex++) {
         const isPlayerCollidesBlock =
-          playersState[playerIndex].x >= SCENE_BLOCKS[blockIndex].x &&
-          playersState[playerIndex].x <=
+          playersState[playerIndex].x + LOGIC_DATA.RADIUS >= SCENE_BLOCKS[blockIndex].x &&
+          playersState[playerIndex].x - LOGIC_DATA.RADIUS <=
             SCENE_BLOCKS[blockIndex].x + SCENE_BLOCKS[blockIndex].width &&
-          playersState[playerIndex].y >= SCENE_BLOCKS[blockIndex].y &&
-          playersState[playerIndex].y <=
+          playersState[playerIndex].y + LOGIC_DATA.RADIUS >= SCENE_BLOCKS[blockIndex].y &&
+          playersState[playerIndex].y - LOGIC_DATA.RADIUS <=
             SCENE_BLOCKS[blockIndex].y + SCENE_BLOCKS[blockIndex].height
 
         if (isPlayerCollidesBlock) {
           if (playersState[playerIndex].ySpeed < 0) {
             playersState[playerIndex].y =
-              SCENE_BLOCKS[blockIndex].y + SCENE_BLOCKS[blockIndex].height
+              SCENE_BLOCKS[blockIndex].y + SCENE_BLOCKS[blockIndex].height + 1
             playersState[playerIndex].ySpeed = 0
           } else {
-            playersState[playerIndex].y = SCENE_BLOCKS[blockIndex].y - LOGIC_DATA.RADIUS * 2
-            playersState[playerIndex].isOnGround = true
+            playersState[playerIndex].y = SCENE_BLOCKS[blockIndex].y - LOGIC_DATA.RADIUS
+            isPlayerOnGround = true
             playersState[playerIndex].ySpeed = 0
           }
-
-          if (playersState[playerIndex].xSpeed < 0) {
-            playersState[playerIndex].x =
-              SCENE_BLOCKS[blockIndex].x + SCENE_BLOCKS[blockIndex].width
-            playersState[playerIndex].xSpeed = 0
-          } else {
-            playersState[playerIndex].x = SCENE_BLOCKS[blockIndex].y - LOGIC_DATA.RADIUS * 2
-            playersState[playerIndex].xSpeed = 0
-          }
-
-          break
         }
+
+        // WIP Если будет необходимость в коллизиях по x
+        // // Если не стоит на блоке
+        // // Если не под блоком
+        // // Если по вертикали начало игрока - LOGIC_DATA.RADIUS
+        // if (playersState[playerIndex].x + LOGIC_DATA.RADIUS) {
+        //   if (playersState[playerIndex].xSpeed < 0) {
+        //     playersState[playerIndex].x =
+        //       SCENE_BLOCKS[blockIndex].x + SCENE_BLOCKS[blockIndex].width
+        //     playersState[playerIndex].xSpeed = 0
+        //   } else {
+        //     playersState[playerIndex].x = SCENE_BLOCKS[blockIndex].x - LOGIC_DATA.RADIUS
+        //     playersState[playerIndex].xSpeed = 0
+        //   }
+        // }
       }
+
+      playersState[playerIndex].isOnGround = isPlayerOnGround
 
       const isPlayerCollideTarget =
         playersState[playerIndex].x >= TARGET_DATA.x &&
