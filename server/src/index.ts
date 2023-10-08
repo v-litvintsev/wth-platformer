@@ -5,6 +5,7 @@ import cors from 'cors'
 import errorMiddleware from './middlewares/error-middleware'
 import appController from './controllers/app-controller'
 import * as uuid from 'uuid'
+import { SCENE_BLOCKS } from './constants/scene-blocks'
 
 const app = express()
 const server = createServer(app)
@@ -62,94 +63,6 @@ const LOGIC_DATA = {
   },
 }
 
-interface ISceneBlock {
-  x: number
-  y: number
-  width: number
-  height: number
-}
-
-const SCENE_BLOCKS: ISceneBlock[] = [
-  {
-    x: 56,
-    y: 802,
-    width: 170,
-    height: 8,
-  },
-  {
-    x: 286,
-    y: 766,
-    width: 108,
-    height: 8,
-  },
-  {
-    x: 410,
-    y: 788,
-    width: 61,
-    height: 8,
-  },
-  {
-    x: 509,
-    y: 683,
-    width: 61,
-    height: 8,
-  },
-  {
-    x: 712,
-    y: 676,
-    width: 84,
-    height: 8,
-  },
-  {
-    x: 670,
-    y: 581,
-    width: 84,
-    height: 8,
-  },
-  {
-    x: 862,
-    y: 515,
-    width: 13,
-    height: 8,
-  },
-  {
-    x: 930,
-    y: 427,
-    width: 14,
-    height: 8,
-  },
-  {
-    x: 608,
-    y: 473,
-    width: 38,
-    height: 8,
-  },
-  {
-    x: 359,
-    y: 509,
-    width: 131,
-    height: 8,
-  },
-  {
-    x: 298,
-    y: 397,
-    width: 67,
-    height: 8,
-  },
-  {
-    x: 464,
-    y: 319,
-    width: 52,
-    height: 8,
-  },
-  {
-    x: 608,
-    y: 369,
-    width: 221,
-    height: 8,
-  },
-]
-
 const TARGET_DATA = {
   x: 703,
   y: 332,
@@ -206,6 +119,37 @@ const start = async () => {
       let isPlayerOnGround = false
 
       for (let blockIndex = 0; blockIndex < SCENE_BLOCKS.length; blockIndex++) {
+        // Если не стоит на блоке
+        // Если не под блоком
+        // Если по вертикали начало игрока - LOGIC_DATA.RADIUS
+        // Справа
+        if (
+          Math.abs(
+            playersState[playerIndex].x -
+              LOGIC_DATA.RADIUS -
+              (SCENE_BLOCKS[blockIndex].x + SCENE_BLOCKS[blockIndex].width)
+          ) < 2 &&
+          playersState[playerIndex].y - LOGIC_DATA.RADIUS + 1 <
+            SCENE_BLOCKS[blockIndex].y + SCENE_BLOCKS[blockIndex].height &&
+          playersState[playerIndex].y + LOGIC_DATA.RADIUS - 1 > SCENE_BLOCKS[blockIndex].y
+        ) {
+          playersState[playerIndex].x =
+            SCENE_BLOCKS[blockIndex].x + SCENE_BLOCKS[blockIndex].width + LOGIC_DATA.RADIUS + 2
+          playersState[playerIndex].xSpeed = 0
+        }
+
+        // Слева
+        if (
+          Math.abs(playersState[playerIndex].x + LOGIC_DATA.RADIUS - SCENE_BLOCKS[blockIndex].x) <
+            2 &&
+          playersState[playerIndex].y - LOGIC_DATA.RADIUS + 1 <
+            SCENE_BLOCKS[blockIndex].y + SCENE_BLOCKS[blockIndex].height &&
+          playersState[playerIndex].y + LOGIC_DATA.RADIUS - 1 > SCENE_BLOCKS[blockIndex].y
+        ) {
+          playersState[playerIndex].x = SCENE_BLOCKS[blockIndex].x - LOGIC_DATA.RADIUS - 2
+          playersState[playerIndex].xSpeed = 0
+        }
+
         const isPlayerCollidesBlock =
           playersState[playerIndex].x + LOGIC_DATA.RADIUS >= SCENE_BLOCKS[blockIndex].x &&
           playersState[playerIndex].x - LOGIC_DATA.RADIUS <=
@@ -214,10 +158,23 @@ const start = async () => {
           playersState[playerIndex].y - LOGIC_DATA.RADIUS <=
             SCENE_BLOCKS[blockIndex].y + SCENE_BLOCKS[blockIndex].height
 
-        if (isPlayerCollidesBlock) {
+        if (
+          !(
+            Math.abs(
+              playersState[playerIndex].x + LOGIC_DATA.RADIUS - SCENE_BLOCKS[blockIndex].x
+            ) <= 2 ||
+            Math.abs(
+              playersState[playerIndex].x -
+                LOGIC_DATA.RADIUS -
+                SCENE_BLOCKS[blockIndex].x +
+                SCENE_BLOCKS[blockIndex].width
+            ) <= 2
+          ) &&
+          isPlayerCollidesBlock
+        ) {
           if (playersState[playerIndex].ySpeed < 0) {
             playersState[playerIndex].y =
-              SCENE_BLOCKS[blockIndex].y + SCENE_BLOCKS[blockIndex].height + 1
+              SCENE_BLOCKS[blockIndex].y + SCENE_BLOCKS[blockIndex].height + 1 + LOGIC_DATA.RADIUS
             playersState[playerIndex].ySpeed = 0
           } else {
             playersState[playerIndex].y = SCENE_BLOCKS[blockIndex].y - LOGIC_DATA.RADIUS
@@ -225,21 +182,6 @@ const start = async () => {
             playersState[playerIndex].ySpeed = 0
           }
         }
-
-        // WIP Если будет необходимость в коллизиях по x
-        // // Если не стоит на блоке
-        // // Если не под блоком
-        // // Если по вертикали начало игрока - LOGIC_DATA.RADIUS
-        // if (playersState[playerIndex].x + LOGIC_DATA.RADIUS) {
-        //   if (playersState[playerIndex].xSpeed < 0) {
-        //     playersState[playerIndex].x =
-        //       SCENE_BLOCKS[blockIndex].x + SCENE_BLOCKS[blockIndex].width
-        //     playersState[playerIndex].xSpeed = 0
-        //   } else {
-        //     playersState[playerIndex].x = SCENE_BLOCKS[blockIndex].x - LOGIC_DATA.RADIUS
-        //     playersState[playerIndex].xSpeed = 0
-        //   }
-        // }
       }
 
       playersState[playerIndex].isOnGround = isPlayerOnGround
